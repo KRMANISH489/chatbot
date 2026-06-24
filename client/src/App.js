@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LandingPage from "./components/LandingPage";
 import Chatbot from "./components/Chatbot";
+import ApiStatusBanner from "./components/ApiStatusBanner";
 import { DEFAULT_REGION } from "./regionConfig";
 
 const STORAGE_KEY = "mira-region";
@@ -39,6 +40,7 @@ function App() {
 
   return (
     <div className="App">
+      <ApiStatusBanner />
       <LandingPage
         region={region}
         onRegionChange={handleRegionChange}

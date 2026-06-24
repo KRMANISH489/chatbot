@@ -50,7 +50,15 @@ app.use("/api/properties", propertiesRoute);
 app.use("/api/leads", leadsRoute);
 
 if (servesClient) {
-  app.use(express.static(clientBuildPath));
+  app.use(
+    express.static(clientBuildPath, {
+      setHeaders(res, filePath) {
+        if (filePath.endsWith("index.html")) {
+          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        }
+      },
+    })
+  );
   console.log("Serving React app from client/build");
 } else {
   app.get("/", (req, res) => {
