@@ -331,6 +331,12 @@ export function validateAnswer(key, value, region = DEFAULT_REGION) {
   }
 
   if (key === "location") {
+    if (/\b\d+\s*bhk\b|\bbhk\b|\bbed(room)?s?\b/i.test(trimmed)) {
+      return {
+        valid: false,
+        error: `That looks like a bedroom count. Please enter a city like ${config.locationExamples}.`,
+      };
+    }
     if (/^\d+$/.test(trimmed)) {
       return {
         valid: false,

@@ -256,6 +256,10 @@ function Chatbot({
           await pushBotMessage(
             "I couldn't find an exact match for your budget, but here are similar properties in your price range:"
           );
+        } else if (matchType === "broad_fallback") {
+          await pushBotMessage(
+            "I couldn't find an exact match, but here are some available properties in your region:"
+          );
         } else {
           await pushBotMessage(
             `Great news! I found ${results.length} matching ${results.length === 1 ? "property" : "properties"} for you:`

@@ -31,6 +31,8 @@ function FeaturedProperties({ region, onAskAboutProperty }) {
 
         {loading ? (
           <div className="properties-loading">Loading properties...</div>
+        ) : properties.length === 0 ? (
+          <div className="properties-loading">No properties loaded. Please refresh or check your connection.</div>
         ) : (
           <div className="featured-grid">
             {properties.map((prop) => (

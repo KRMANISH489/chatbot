@@ -1,6 +1,13 @@
+function normalizeRegion(region) {
+  if (!region) return null;
+  const value = String(region).toUpperCase();
+  return value === "IN" || value === "US" ? value : null;
+}
+
 function exactFilter(merged, { region, location, budget, bedrooms }) {
+  const normalizedRegion = normalizeRegion(region);
   return merged.filter((p) =>
-    (!region || p.region === region) &&
+    (!normalizedRegion || p.region === normalizedRegion) &&
     (!location || p.location.toLowerCase().includes(String(location).toLowerCase())) &&
     (!budget || parseInt(p.price, 10) <= parseInt(budget, 10)) &&
     (!bedrooms || parseInt(p.bedrooms, 10) === parseInt(bedrooms, 10))
@@ -8,7 +15,8 @@ function exactFilter(merged, { region, location, budget, bedrooms }) {
 }
 
 function similarFilter(merged, { region, location, budget, bedrooms }) {
-  let pool = merged.filter((p) => !region || p.region === region);
+  const normalizedRegion = normalizeRegion(region);
+  let pool = merged.filter((p) => !normalizedRegion || p.region === normalizedRegion);
 
   if (location) {
     const loc = String(location).toLowerCase();
@@ -26,7 +34,7 @@ function similarFilter(merged, { region, location, budget, bedrooms }) {
     return result.slice(0, 6);
   }
 
-  const rangePct = region === "IN" ? 0.45 : 0.3;
+  const rangePct = normalizedRegion === "IN" ? 0.45 : 0.3;
   const minPrice = budgetNum * (1 - rangePct);
   const maxPrice = budgetNum * (1 + rangePct);
 
@@ -55,18 +63,31 @@ function similarFilter(merged, { region, location, budget, bedrooms }) {
   return candidates.slice(0, 6);
 }
 
+function regionFallback(merged, region) {
+  const normalizedRegion = normalizeRegion(region) || "IN";
+  const pool = merged.filter((p) => p.region === normalizedRegion);
+  return pool.slice(0, 6);
+}
+
 function searchProperties(merged, criteria) {
-  const exact = exactFilter(merged, criteria);
+  const normalized = { ...criteria, region: normalizeRegion(criteria.region) || "IN" };
+
+  const exact = exactFilter(merged, normalized);
   if (exact.length > 0) {
     return { properties: exact, matchType: "exact" };
   }
 
-  const similar = similarFilter(merged, criteria);
+  const similar = similarFilter(merged, normalized);
   if (similar.length > 0) {
     return { properties: similar, matchType: "similar_range" };
   }
 
-  return { properties: [], matchType: "none" };
+  const fallback = regionFallback(merged, normalized.region);
+  if (fallback.length > 0) {
+    return { properties: fallback, matchType: "broad_fallback" };
+  }
+
+  return { properties: merged.slice(0, 6), matchType: "broad_fallback" };
 }
 
-module.exports = { searchProperties };
+module.exports = { searchProperties, normalizeRegion };

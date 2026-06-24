@@ -5,6 +5,33 @@ const { searchProperties } = require("../searchHelpers");
 
 const router = express.Router();
 
+function loadMergedProperties() {
+  const basics = JSON.parse(fs.readFileSync(path.join(__dirname, "../data_structure/property_basics.json")));
+  const characteristics = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "../data_structure/property_characteristics.json"))
+  );
+  const images = JSON.parse(fs.readFileSync(path.join(__dirname, "../data_structure/property_images.json")));
+
+  return basics.map((basic) => {
+    const char = characteristics.find((c) => c.id === basic.id) || {};
+    const image = images.find((i) => i.id === basic.id) || {};
+    return { ...basic, ...char, ...image };
+  });
+}
+
+router.get("/counts", (req, res) => {
+  try {
+    const merged = loadMergedProperties();
+    const counts = merged.reduce((acc, property) => {
+      acc[property.region] = (acc[property.region] || 0) + 1;
+      return acc;
+    }, {});
+    res.json({ total: merged.length, counts });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load properties" });
+  }
+});
+
 router.post("/", (req, res) => {
   const { location, budget, bedrooms, region } = req.body;
 
@@ -23,16 +50,7 @@ router.post("/", (req, res) => {
   }
 
   try {
-    const basics = JSON.parse(fs.readFileSync(path.join(__dirname, "../data_structure/property_basics.json")));
-    const characteristics = JSON.parse(fs.readFileSync(path.join(__dirname, "../data_structure/property_characteristics.json")));
-    const images = JSON.parse(fs.readFileSync(path.join(__dirname, "../data_structure/property_images.json")));
-
-    const merged = basics.map((basic) => {
-      const char = characteristics.find((c) => c.id === basic.id) || {};
-      const image = images.find((i) => i.id === basic.id) || {};
-      return { ...basic, ...char, ...image };
-    });
-
+    const merged = loadMergedProperties();
     const result = searchProperties(merged, { region, location, budget, bedrooms });
     res.json(result);
   } catch (err) {
