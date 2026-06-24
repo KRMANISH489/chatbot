@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "serve": "serve -s build -l ${PORT:-3000}",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -16,7 +17,8 @@
     "axios": "^1.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "serve": "^14.2.6"
   },
   "browserslist": {
     "production": [

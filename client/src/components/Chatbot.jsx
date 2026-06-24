@@ -16,14 +16,13 @@ import {
   getSpeechLang,
   normalizeVoiceInput,
 } from "../voiceHelpers";
+import { PROPERTIES_API_URL, LEADS_API_URL } from "../apiConfig";
 import RegionSwitcher from "./RegionSwitcher";
 import "./ChatBot.scss";
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
-const API_URL = "http://localhost:5000/api/properties";
-const LEADS_API_URL = "http://localhost:5000/api/leads";
 const FALLBACK_IMAGE = "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
 
 function stripForSpeech(text) {
@@ -233,7 +232,7 @@ function Chatbot({
     await pushBotMessage("Searching for matching properties...", {}, 500);
 
     try {
-      const res = await axios.post(API_URL, { ...criteria, region }, { timeout: 10000 });
+      const res = await axios.post(PROPERTIES_API_URL, { ...criteria, region }, { timeout: 10000 });
       const { properties: results, matchType } = parsePropertyApiResponse(res.data);
 
       if (results.length === 0) {

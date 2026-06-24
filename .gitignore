@@ -4,6 +4,7 @@ server/node_modules/
 
 # === React (frontend) ===
 client/node_modules/
+client/build/
 client/.env
 
 # Lead submissions (runtime data)

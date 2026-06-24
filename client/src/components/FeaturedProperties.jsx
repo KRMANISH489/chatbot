@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { formatPrice } from "../regionConfig";
+import { PROPERTIES_API_URL } from "../apiConfig";
 import { parsePropertyApiResponse } from "./chatHelpers";
 
-const API_URL = "http://localhost:5000/api/properties";
 const FALLBACK_IMAGE = "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
 
 function FeaturedProperties({ region, onAskAboutProperty }) {
@@ -13,7 +13,7 @@ function FeaturedProperties({ region, onAskAboutProperty }) {
   useEffect(() => {
     setLoading(true);
     axios
-      .post(API_URL, { region })
+      .post(PROPERTIES_API_URL, { region })
       .then((res) => setProperties(parsePropertyApiResponse(res.data).properties.slice(0, 6)))
       .catch(() => setProperties([]))
       .finally(() => setLoading(false));
