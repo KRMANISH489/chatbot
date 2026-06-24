@@ -11,6 +11,7 @@ import {
   parseNaturalQuery,
   buildPropertySummary,
 } from "./chatHelpers";
+import { BRAND } from "../brandConfig";
 import { formatPrice, getRegionConfig, DEFAULT_REGION } from "../regionConfig";
 import {
   getSpeechLang,
@@ -421,9 +422,9 @@ function Chatbot({
         <div className="whatsapp-chatbot">
           <div className="chat-header">
             <div className="chat-header-info">
-              <div className="bot-avatar">M</div>
+              <div className="bot-avatar">{BRAND.avatarLetter}</div>
               <div>
-                <strong>Agent Mira</strong>
+                <strong>{BRAND.name}</strong>
                 <span className="online-status">Online • {regionConfig.flag} {regionConfig.label}</span>
               </div>
             </div>
@@ -460,7 +461,7 @@ function Chatbot({
           <div className="chat-window">
             {messages.map((msg, idx) => (
               <div className={`msg-row ${msg.type === "user" ? "user" : "bot"}`} key={idx}>
-                {msg.type !== "user" && <div className="bot-avatar small">M</div>}
+                {msg.type !== "user" && <div className="bot-avatar small">{BRAND.avatarLetter}</div>}
 
                 {msg.type === "property" ? (
                   <div className="property-card">
@@ -493,7 +494,7 @@ function Chatbot({
 
             {isTyping && (
               <div className="msg-row bot">
-                <div className="bot-avatar small">M</div>
+                <div className="bot-avatar small">{BRAND.avatarLetter}</div>
                 <div className="bubble bot typing-bubble">
                   <div className="typing-dots"><span /><span /><span /></div>
                 </div>
@@ -502,7 +503,7 @@ function Chatbot({
 
             {isListening && (
               <div className="msg-row bot">
-                <div className="bot-avatar small">M</div>
+                <div className="bot-avatar small">{BRAND.avatarLetter}</div>
                 <div className="bubble bot listening">
                   {hindiVoiceOn ? "सुन रही हूँ... अब बोलिए" : "Listening... speak now"}
                 </div>

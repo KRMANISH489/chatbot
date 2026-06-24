@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { formatPrice } from "../regionConfig";
+import { BRAND } from "../brandConfig";
 import { PROPERTIES_API_URL } from "../apiConfig";
 import { parsePropertyApiResponse } from "./chatHelpers";
 
@@ -25,7 +26,7 @@ function FeaturedProperties({ region, onAskAboutProperty }) {
         <div className="section-intro">
           <span className="section-label">Featured Listings</span>
           <h2>Handpicked Properties For You</h2>
-          <p>Tap any property to ask Mira about it in chat.</p>
+          <p>Tap any property to ask {BRAND.assistant} about it in chat.</p>
         </div>
 
         {loading ? (
@@ -61,7 +62,7 @@ function FeaturedProperties({ region, onAskAboutProperty }) {
                     <span>{prop.bathrooms} Baths</span>
                     <span>{prop.size_sqft} sq ft</span>
                   </div>
-                  <span className="featured-card__cta">Ask Mira about this →</span>
+                  <span className="featured-card__cta">Ask {BRAND.assistant} about this →</span>
                 </div>
               </article>
             ))}

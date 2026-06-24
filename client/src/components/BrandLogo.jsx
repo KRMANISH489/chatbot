@@ -14,7 +14,7 @@ function BrandLogo({ size = "md", showTagline = false, light = false }) {
       </svg>
       <div className="brand-logo__text">
         <span className="brand-logo__name">
-          Agent <em>Mira</em>
+          Abhi <em>Real Estate</em>
         </span>
         {showTagline && <span className="brand-logo__tagline">Premium Real Estate</span>}
       </div>

@@ -3,6 +3,7 @@ import BrandLogo from "./BrandLogo";
 import PropertyCompare from "./PropertyCompare";
 import FeaturedProperties from "./FeaturedProperties";
 import RegionSwitcher from "./RegionSwitcher";
+import { BRAND } from "../brandConfig";
 import { getRegionConfig } from "../regionConfig";
 import "./LandingPage.scss";
 
@@ -35,7 +36,7 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
           </div>
           <RegionSwitcher region={region} onRegionChange={onRegionChange} compact />
           <button type="button" className="nav-cta" onClick={onOpenChat}>
-            Talk to Mira
+            Talk to {BRAND.assistant}
           </button>
         </div>
       </nav>
@@ -49,7 +50,7 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
             <span> With AI-Powered Guidance</span>
           </h1>
           <p>
-            Search smart, compare instantly, and chat with Agent Mira — your personal
+            Search smart, compare instantly, and chat with {BRAND.name} — your personal
             property assistant with voice support.
           </p>
           <div className="hero__actions">
@@ -75,7 +76,7 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
       <section className="landing-section features-section" id="features">
         <div className="landing-container">
           <div className="section-intro section-intro--center">
-            <span className="section-label">Why Agent Mira</span>
+            <span className="section-label">Why {BRAND.name}</span>
             <h2>Everything You Need In One Place</h2>
           </div>
           <div className="features-grid">
@@ -94,7 +95,7 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
             <article className="feature-card">
               <div className="feature-card__icon">🎤</div>
               <h3>Voice Assistant</h3>
-              <p>Speak naturally — Mira listens and responds with voice-enabled support.</p>
+              <p>Speak naturally — {BRAND.assistant} listens and responds with voice-enabled support.</p>
               <button type="button" className="feature-link" onClick={onOpenChat}>Try Voice →</button>
             </article>
           </div>
@@ -122,9 +123,9 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
         <div className="landing-container cta-banner__inner">
           <BrandLogo size="lg" showTagline light />
           <h2>Ready to find your next home?</h2>
-          <p>Chat with Agent Mira and discover properties tailored to your budget and lifestyle.</p>
+          <p>Chat with {BRAND.assistant} and discover properties tailored to your budget and lifestyle.</p>
           <button type="button" className="btn btn-primary btn-lg" onClick={onOpenChat}>
-            Chat With Agent Mira
+            Chat With {BRAND.assistant}
           </button>
         </div>
       </section>
@@ -132,7 +133,7 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
       <footer className="landing-footer">
         <div className="landing-container landing-footer__inner">
           <BrandLogo size="sm" showTagline />
-          <p>© {new Date().getFullYear()} Agent Mira Real Estate. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</p>
           <div className="footer-links">
             <button type="button" onClick={() => scrollTo("features")}>Features</button>
             <button type="button" onClick={() => scrollTo("compare")}>Compare</button>

@@ -1,4 +1,5 @@
 import { getRegionConfig, formatPrice, DEFAULT_REGION } from "../regionConfig";
+import { BRAND } from "../brandConfig";
 
 export function getQuestions(region = DEFAULT_REGION) {
   const config = getRegionConfig(region);
@@ -406,7 +407,7 @@ export function createWelcomeMessages(region = DEFAULT_REGION) {
   return [
     {
       type: "bot",
-      text: `Hi! I'm Mira, your real estate assistant. I'll help you find the perfect property in ${config.flag} ${config.label}.`,
+      text: `Hi! I'm ${BRAND.assistant} from ${BRAND.name}. I'll help you find the perfect property in ${config.flag} ${config.label}.`,
       time: now,
     },
     {
