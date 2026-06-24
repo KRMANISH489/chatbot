@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { parseBudgetAmount, getQuickOptions, parsePropertyApiResponse } from "./chatHelpers";
 import { formatPrice, getRegionConfig, DEFAULT_REGION } from "../regionConfig";
-import { PROPERTIES_API_URL } from "../apiConfig";
+import { getPropertiesApiUrl } from "../apiConfig";
 import "./PropertyCompare.scss";
 
 function getCompareFields(region) {
@@ -64,7 +64,7 @@ async function findProperty(rawInput, region) {
   const criteria = parseSearchInput(rawInput, region);
   if (!criteria) return null;
 
-  const res = await axios.post(PROPERTIES_API_URL, {
+  const res = await axios.post(getPropertiesApiUrl(), {
     region,
     location: criteria.location || undefined,
     budget: criteria.budget || undefined,

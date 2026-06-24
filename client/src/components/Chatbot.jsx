@@ -17,7 +17,7 @@ import {
   getSpeechLang,
   normalizeVoiceInput,
 } from "../voiceHelpers";
-import { PROPERTIES_API_URL, LEADS_API_URL } from "../apiConfig";
+import { getPropertiesApiUrl, getLeadsApiUrl } from "../apiConfig";
 import RegionSwitcher from "./RegionSwitcher";
 import "./ChatBot.scss";
 
@@ -233,7 +233,7 @@ function Chatbot({
     await pushBotMessage("Searching for matching properties...", {}, 500);
 
     try {
-      const res = await axios.post(PROPERTIES_API_URL, { ...criteria, region }, { timeout: 10000 });
+      const res = await axios.post(getPropertiesApiUrl(), { ...criteria, region }, { timeout: 10000 });
       const { properties: results, matchType } = parsePropertyApiResponse(res.data);
 
       if (results.length === 0) {
@@ -388,7 +388,7 @@ function Chatbot({
 
     setLeadLoading(true);
     try {
-      await axios.post(LEADS_API_URL, {
+      await axios.post(getLeadsApiUrl(), {
         name: leadForm.name,
         phone: leadForm.phone,
         email: leadForm.email,

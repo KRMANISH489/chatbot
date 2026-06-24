@@ -1,4 +1,23 @@
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+function trimSlash(url) {
+  return url.replace(/\/$/, "");
+}
 
-export const PROPERTIES_API_URL = `${API_BASE}/api/properties`;
-export const LEADS_API_URL = `${API_BASE}/api/leads`;
+export function getApiBase() {
+  if (typeof window !== "undefined" && window.__API_BASE__) {
+    return trimSlash(window.__API_BASE__);
+  }
+
+  if (process.env.REACT_APP_API_URL) {
+    return trimSlash(process.env.REACT_APP_API_URL);
+  }
+
+  return "http://localhost:5000";
+}
+
+export function getPropertiesApiUrl() {
+  return `${getApiBase()}/api/properties`;
+}
+
+export function getLeadsApiUrl() {
+  return `${getApiBase()}/api/leads`;
+}

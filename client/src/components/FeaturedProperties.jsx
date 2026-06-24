@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { formatPrice } from "../regionConfig";
 import { BRAND } from "../brandConfig";
-import { PROPERTIES_API_URL } from "../apiConfig";
+import { getPropertiesApiUrl } from "../apiConfig";
 import { parsePropertyApiResponse } from "./chatHelpers";
 
 const FALLBACK_IMAGE = "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
@@ -14,7 +14,7 @@ function FeaturedProperties({ region, onAskAboutProperty }) {
   useEffect(() => {
     setLoading(true);
     axios
-      .post(PROPERTIES_API_URL, { region })
+      .post(getPropertiesApiUrl(), { region })
       .then((res) => setProperties(parsePropertyApiResponse(res.data).properties.slice(0, 6)))
       .catch(() => setProperties([]))
       .finally(() => setLoading(false));
