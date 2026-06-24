@@ -1,10 +1,12 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const { searchProperties } = require("../searchHelpers");
+
 const router = express.Router();
 
 router.post("/", (req, res) => {
-  const { location, budget, bedrooms } = req.body;
+  const { location, budget, bedrooms, region } = req.body;
 
   if (budget !== undefined && budget !== "") {
     const budgetNum = parseInt(budget, 10);
@@ -26,18 +28,13 @@ router.post("/", (req, res) => {
     const images = JSON.parse(fs.readFileSync(path.join(__dirname, "../data_structure/property_images.json")));
 
     const merged = basics.map((basic) => {
-      const char = characteristics.find(c => c.id === basic.id) || {};
-      const image = images.find(i => i.id === basic.id) || {};
+      const char = characteristics.find((c) => c.id === basic.id) || {};
+      const image = images.find((i) => i.id === basic.id) || {};
       return { ...basic, ...char, ...image };
     });
 
-    const filtered = merged.filter(p =>
-      (!location || p.location.toLowerCase().includes(String(location).toLowerCase())) &&
-      (!budget || parseInt(p.price) <= parseInt(budget)) &&
-      (!bedrooms || parseInt(p.bedrooms) === parseInt(bedrooms))
-    );
-
-    res.json(filtered);
+    const result = searchProperties(merged, { region, location, budget, bedrooms });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to load properties" });
   }

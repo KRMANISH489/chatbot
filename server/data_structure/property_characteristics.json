@@ -68,5 +68,180 @@
     "bathrooms": 2,
     "size_sqft": 1900,
     "amenities": ["Minimalist Design", "Smart Appliances", "Energy Efficient"]
+  },
+  {
+    "id": 101,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "size_sqft": 1450,
+    "amenities": ["Sea View", "Clubhouse", "Covered Parking"]
+  },
+  {
+    "id": 102,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 1100,
+    "amenities": ["Metro Access", "Power Backup", "Security"]
+  },
+  {
+    "id": 103,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "size_sqft": 1650,
+    "amenities": ["Swimming Pool", "Gym", "Children's Play Area"]
+  },
+  {
+    "id": 104,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 980,
+    "amenities": ["Ready to Move", "Lift", "Visitor Parking"]
+  },
+  {
+    "id": 105,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "size_sqft": 1380,
+    "amenities": ["Lake View", "Jogging Track", "24/7 Security"]
+  },
+  {
+    "id": 106,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "size_sqft": 620,
+    "amenities": ["Near Railway", "Gym", "Intercom"]
+  },
+  {
+    "id": 107,
+    "bedrooms": 4,
+    "bathrooms": 4,
+    "size_sqft": 2800,
+    "amenities": ["Private Terrace", "Modular Kitchen", "Smart Home"]
+  },
+  {
+    "id": 108,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 1050,
+    "amenities": ["Smart Locks", "EV Charging", "Co-working Lounge"]
+  },
+  {
+    "id": 109,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "size_sqft": 1280,
+    "amenities": ["Garden View", "Rainwater Harvesting", "CCTV"]
+  },
+  {
+    "id": 110,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "size_sqft": 580,
+    "amenities": ["Affordable", "Near IT Park", "Public Transport"]
+  },
+  {
+    "id": 111,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 920,
+    "amenities": ["Near Metro", "Market Nearby", "Lift"]
+  },
+  {
+    "id": 112,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "size_sqft": 1180,
+    "amenities": ["Sea Breeze", "Parking", "Security"]
+  },
+  {
+    "id": 113,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "size_sqft": 540,
+    "amenities": ["Metro Connected", "Power Backup", "Affordable"]
+  },
+  {
+    "id": 114,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 950,
+    "amenities": ["Gated Society", "Park View", "Lift"]
+  },
+  {
+    "id": 115,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "size_sqft": 1320,
+    "amenities": ["Golf Course View", "Clubhouse", "Swimming Pool"]
+  },
+  {
+    "id": 116,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "size_sqft": 600,
+    "amenities": ["IT Hub Nearby", "Cafeteria", "Gym"]
+  },
+  {
+    "id": 117,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 1020,
+    "amenities": ["Tech Park Access", "Balcony", "Security"]
+  },
+  {
+    "id": 118,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "size_sqft": 1520,
+    "amenities": ["Premium Location", "Modular Kitchen", "Covered Parking"]
+  },
+  {
+    "id": 119,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "size_sqft": 520,
+    "amenities": ["Budget Friendly", "Bus Stop", "Water Supply"]
+  },
+  {
+    "id": 120,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 900,
+    "amenities": ["Family Friendly", "Play Area", "Visitor Parking"]
+  },
+  {
+    "id": 121,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "size_sqft": 1150,
+    "amenities": ["IT Park Nearby", "Garden", "Lift"]
+  },
+  {
+    "id": 122,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 980,
+    "amenities": ["Corporate Hub", "Gym", "24/7 Water"]
+  },
+  {
+    "id": 123,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "size_sqft": 1420,
+    "amenities": ["Premium Area", "Terrace Access", "Smart Security"]
+  },
+  {
+    "id": 124,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "size_sqft": 560,
+    "amenities": ["Lake View", "Affordable", "Railway Nearby"]
+  },
+  {
+    "id": 125,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "size_sqft": 1000,
+    "amenities": ["Central Location", "Metro Access", "Shopping Mall Nearby"]
   }
 ]

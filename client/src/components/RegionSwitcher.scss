@@ -1,0 +1,109 @@
+.region-switcher {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  gap: 2px;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    background: transparent;
+    color: inherit;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+
+    &.active {
+      background: #fff;
+      color: #075e54;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  &.compact button {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.75rem;
+  }
+
+  &__flag {
+    line-height: 1;
+  }
+}
+
+.landing-nav .region-switcher {
+  background: rgba(255, 255, 255, 0.15);
+
+  button {
+    color: rgba(255, 255, 255, 0.9);
+
+    &.active {
+      background: #fff;
+      color: #075e54;
+    }
+  }
+}
+
+.landing-nav.scrolled .region-switcher {
+  background: rgba(7, 94, 84, 0.08);
+
+  button {
+    color: var(--text-dark, #1a1a1a);
+
+    &.active {
+      background: var(--brand-primary, #075e54);
+      color: #fff;
+    }
+  }
+}
+
+.chat-header .region-switcher {
+  background: rgba(255, 255, 255, 0.12);
+  margin-right: 0.25rem;
+
+  button {
+    color: rgba(255, 255, 255, 0.95);
+    padding: 0.28rem 0.5rem;
+
+    &.active {
+      background: rgba(255, 255, 255, 0.95);
+      color: #075e54;
+    }
+  }
+
+  &.compact .region-switcher__label {
+    display: none;
+  }
+}
+
+.hero-region {
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  span {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .region-switcher {
+    background: rgba(255, 255, 255, 0.15);
+
+    button {
+      color: #fff;
+
+      &.active {
+        background: #fff;
+        color: #075e54;
+      }
+    }
+  }
+}

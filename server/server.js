@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const propertiesRoute = require("./routes/properties");
+const leadsRoute = require("./routes/leads");
 
 const app = express();
 app.use(cors());
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 
 // Property routes
 app.use("/api/properties", propertiesRoute);
+app.use("/api/leads", leadsRoute);
 
 // Server Start
 const PORT = 5000;

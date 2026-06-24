@@ -671,3 +671,48 @@
 .voice-hint {
   display: none;
 }
+
+.lead-capture {
+  padding: 0.75rem 1rem 0.5rem;
+  background: #f0faf8;
+  border-top: 1px solid #d8ece8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__title {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #075e54;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #cde5e0;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    outline: none;
+
+    &:focus {
+      border-color: #075e54;
+    }
+  }
+
+  &__btn {
+    padding: 0.6rem 1rem;
+    background: #075e54;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.88rem;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

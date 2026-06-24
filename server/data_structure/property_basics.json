@@ -1,62 +1,247 @@
 [
   {
     "id": 1,
+    "region": "US",
     "title": "3 BHK Apartment in Downtown",
     "price": 450000,
     "location": "New York, NY"
   },
   {
     "id": 2,
+    "region": "US",
     "title": "2 BHK Condo with Sea View",
     "price": 380000,
     "location": "Miami, FL"
   },
   {
     "id": 3,
+    "region": "US",
     "title": "Luxury Villa with Private Garden",
     "price": 850000,
     "location": "Los Angeles, CA"
   },
   {
     "id": 4,
+    "region": "US",
     "title": "1 BHK Budget Apartment",
     "price": 250000,
     "location": "Austin, TX"
   },
   {
     "id": 5,
+    "region": "US",
     "title": "Penthouse with Skyline View",
     "price": 1200000,
     "location": "San Francisco, CA"
   },
   {
     "id": 6,
+    "region": "US",
     "title": "Cozy Studio in Central Park",
     "price": 300000,
     "location": "New York, NY"
   },
   {
     "id": 7,
+    "region": "US",
     "title": "Lakefront House with Dock",
     "price": 750000,
     "location": "Chicago, IL"
   },
   {
     "id": 8,
+    "region": "US",
     "title": "Modern Townhouse with Backyard",
     "price": 600000,
     "location": "Dallas, TX"
   },
   {
     "id": 9,
+    "region": "US",
     "title": "4 BHK Duplex with Home Office",
     "price": 920000,
     "location": "Seattle, WA"
   },
   {
     "id": 10,
+    "region": "US",
     "title": "Minimalist Smart Home",
     "price": 700000,
     "location": "Boston, MA"
+  },
+  {
+    "id": 101,
+    "region": "IN",
+    "title": "3 BHK Sea-Facing Apartment",
+    "price": 12000000,
+    "location": "Mumbai, MH"
+  },
+  {
+    "id": 102,
+    "region": "IN",
+    "title": "2 BHK Premium Flat near Metro",
+    "price": 8500000,
+    "location": "Delhi, DL"
+  },
+  {
+    "id": 103,
+    "region": "IN",
+    "title": "3 BHK Gated Community Villa",
+    "price": 9500000,
+    "location": "Bangalore, KA"
+  },
+  {
+    "id": 104,
+    "region": "IN",
+    "title": "2 BHK Ready-to-Move Apartment",
+    "price": 6500000,
+    "location": "Pune, MH"
+  },
+  {
+    "id": 105,
+    "region": "IN",
+    "title": "3 BHK Lake View Residence",
+    "price": 7800000,
+    "location": "Hyderabad, TS"
+  },
+  {
+    "id": 106,
+    "region": "IN",
+    "title": "1 BHK Compact Urban Home",
+    "price": 4500000,
+    "location": "Mumbai, MH"
+  },
+  {
+    "id": 107,
+    "region": "IN",
+    "title": "4 BHK Luxury Penthouse",
+    "price": 15000000,
+    "location": "Delhi, DL"
+  },
+  {
+    "id": 108,
+    "region": "IN",
+    "title": "2 BHK Smart Home Apartment",
+    "price": 5500000,
+    "location": "Bangalore, KA"
+  },
+  {
+    "id": 109,
+    "region": "IN",
+    "title": "3 BHK Garden View Flat",
+    "price": 7200000,
+    "location": "Pune, MH"
+  },
+  {
+    "id": 110,
+    "region": "IN",
+    "title": "1 BHK Starter Apartment",
+    "price": 3800000,
+    "location": "Hyderabad, TS"
+  },
+  {
+    "id": 111,
+    "region": "IN",
+    "title": "2 BHK Andheri West Flat",
+    "price": 5200000,
+    "location": "Mumbai, MH"
+  },
+  {
+    "id": 112,
+    "region": "IN",
+    "title": "3 BHK Bandra Family Home",
+    "price": 6800000,
+    "location": "Mumbai, MH"
+  },
+  {
+    "id": 113,
+    "region": "IN",
+    "title": "1 BHK Dwarka Sector Flat",
+    "price": 2800000,
+    "location": "Delhi, DL"
+  },
+  {
+    "id": 114,
+    "region": "IN",
+    "title": "2 BHK Noida Extension Home",
+    "price": 4800000,
+    "location": "Delhi, DL"
+  },
+  {
+    "id": 115,
+    "region": "IN",
+    "title": "3 BHK Gurgaon Golf Course Road",
+    "price": 6200000,
+    "location": "Delhi, DL"
+  },
+  {
+    "id": 116,
+    "region": "IN",
+    "title": "1 BHK Whitefield Studio",
+    "price": 3200000,
+    "location": "Bangalore, KA"
+  },
+  {
+    "id": 117,
+    "region": "IN",
+    "title": "2 BHK Electronic City Apartment",
+    "price": 5800000,
+    "location": "Bangalore, KA"
+  },
+  {
+    "id": 118,
+    "region": "IN",
+    "title": "3 BHK Indiranagar Premium Flat",
+    "price": 8800000,
+    "location": "Bangalore, KA"
+  },
+  {
+    "id": 119,
+    "region": "IN",
+    "title": "1 BHK Hinjewadi Budget Home",
+    "price": 2500000,
+    "location": "Pune, MH"
+  },
+  {
+    "id": 120,
+    "region": "IN",
+    "title": "2 BHK Wakad Family Apartment",
+    "price": 4200000,
+    "location": "Pune, MH"
+  },
+  {
+    "id": 121,
+    "region": "IN",
+    "title": "3 BHK Kharadi Modern Flat",
+    "price": 5800000,
+    "location": "Pune, MH"
+  },
+  {
+    "id": 122,
+    "region": "IN",
+    "title": "2 BHK Gachibowli IT Corridor Home",
+    "price": 4400000,
+    "location": "Hyderabad, TS"
+  },
+  {
+    "id": 123,
+    "region": "IN",
+    "title": "3 BHK Jubilee Hills Villa Flat",
+    "price": 6800000,
+    "location": "Hyderabad, TS"
+  },
+  {
+    "id": 124,
+    "region": "IN",
+    "title": "1 BHK Thane Lakeside Apartment",
+    "price": 3500000,
+    "location": "Mumbai, MH"
+  },
+  {
+    "id": 125,
+    "region": "IN",
+    "title": "2 BHK Saket Central Delhi Flat",
+    "price": 5200000,
+    "location": "Delhi, DL"
   }
 ]

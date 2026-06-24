@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { formatPrice } from "../regionConfig";
+import { parsePropertyApiResponse } from "./chatHelpers";
 
 const API_URL = "http://localhost:5000/api/properties";
 const FALLBACK_IMAGE = "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
 
-function FeaturedProperties() {
+function FeaturedProperties({ region, onAskAboutProperty }) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     axios
-      .post(API_URL, {})
-      .then((res) => setProperties((res.data || []).slice(0, 6)))
+      .post(API_URL, { region })
+      .then((res) => setProperties(parsePropertyApiResponse(res.data).properties.slice(0, 6)))
       .catch(() => setProperties([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [region]);
 
   return (
     <section className="landing-section featured-section" id="properties">
@@ -22,7 +25,7 @@ function FeaturedProperties() {
         <div className="section-intro">
           <span className="section-label">Featured Listings</span>
           <h2>Handpicked Properties For You</h2>
-          <p>Explore premium homes across top cities — verified listings with full details.</p>
+          <p>Tap any property to ask Mira about it in chat.</p>
         </div>
 
         {loading ? (
@@ -30,7 +33,16 @@ function FeaturedProperties() {
         ) : (
           <div className="featured-grid">
             {properties.map((prop) => (
-              <article className="featured-card" key={prop.id}>
+              <article
+                className="featured-card featured-card--clickable"
+                key={prop.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => onAskAboutProperty?.(prop)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") onAskAboutProperty?.(prop);
+                }}
+              >
                 <div className="featured-card__image">
                   <img
                     src={prop.image_url}
@@ -43,12 +55,13 @@ function FeaturedProperties() {
                   <h3>{prop.title}</h3>
                   <p className="featured-card__location">{prop.location}</p>
                   <p className="featured-card__price">
-                    ₹{Number(prop.price).toLocaleString("en-IN")}
+                    {formatPrice(region, prop.price)}
                   </p>
                   <div className="featured-card__meta">
                     <span>{prop.bathrooms} Baths</span>
                     <span>{prop.size_sqft} sq ft</span>
                   </div>
+                  <span className="featured-card__cta">Ask Mira about this →</span>
                 </div>
               </article>
             ))}

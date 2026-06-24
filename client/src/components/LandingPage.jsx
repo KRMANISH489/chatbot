@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import BrandLogo from "./BrandLogo";
 import PropertyCompare from "./PropertyCompare";
 import FeaturedProperties from "./FeaturedProperties";
+import RegionSwitcher from "./RegionSwitcher";
+import { getRegionConfig } from "../regionConfig";
 import "./LandingPage.scss";
 
-function LandingPage({ onOpenChat }) {
+function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, comparePair, onCompareConsumed }) {
   const [navScrolled, setNavScrolled] = useState(false);
 
   useEffect(() => {
@@ -16,6 +18,8 @@ function LandingPage({ onOpenChat }) {
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const regionConfig = getRegionConfig(region);
 
   return (
     <div className="landing-page">
@@ -29,6 +33,7 @@ function LandingPage({ onOpenChat }) {
             <button type="button" onClick={() => scrollTo("compare")}>Compare</button>
             <button type="button" onClick={() => scrollTo("properties")}>Properties</button>
           </div>
+          <RegionSwitcher region={region} onRegionChange={onRegionChange} compact />
           <button type="button" className="nav-cta" onClick={onOpenChat}>
             Talk to Mira
           </button>
@@ -54,6 +59,10 @@ function LandingPage({ onOpenChat }) {
             <button type="button" className="btn btn-outline" onClick={() => scrollTo("compare")}>
               Compare Properties
             </button>
+          </div>
+          <div className="hero-region">
+            <span>Search properties in:</span>
+            <RegionSwitcher region={region} onRegionChange={onRegionChange} />
           </div>
           <div className="hero__stats">
             <div><strong>500+</strong><span>Properties</span></div>
@@ -97,13 +106,17 @@ function LandingPage({ onOpenChat }) {
           <div className="section-intro section-intro--center">
             <span className="section-label">Property Compare</span>
             <h2>Compare Two Properties Instantly</h2>
-            <p>One input per property — type location, price, or bedrooms.</p>
+            <p>One input per property — type location, price, or bedrooms in {regionConfig.label}.</p>
           </div>
-          <PropertyCompare />
+          <PropertyCompare
+            region={region}
+            comparePair={comparePair}
+            onCompareConsumed={onCompareConsumed}
+          />
         </div>
       </section>
 
-      <FeaturedProperties />
+      <FeaturedProperties region={region} onAskAboutProperty={onAskAboutProperty} />
 
       <section className="cta-banner">
         <div className="landing-container cta-banner__inner">

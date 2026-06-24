@@ -1,22 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { parseBudgetAmount, getQuickOptions, parsePropertyApiResponse } from "./chatHelpers";
+import { formatPrice, getRegionConfig, DEFAULT_REGION } from "../regionConfig";
 import "./PropertyCompare.scss";
 
 const API_URL = "http://localhost:5000/api/properties";
 
-const COMPARE_FIELDS = [
-  { key: "title", label: "Property" },
-  { key: "price", label: "Price", format: (v) => `₹${Number(v).toLocaleString("en-IN")}` },
-  { key: "location", label: "Location" },
-  { key: "bedrooms", label: "Bedrooms" },
-  { key: "bathrooms", label: "Bathrooms" },
-  { key: "size_sqft", label: "Size", format: (v) => `${v} sq ft` },
-  { key: "amenities", label: "Amenities", format: (v) => v?.join(", ") || "—" },
-];
+function getCompareFields(region) {
+  return [
+    { key: "title", label: "Property" },
+    { key: "price", label: "Price", format: (v) => formatPrice(region, v) },
+    { key: "location", label: "Location" },
+    { key: "bedrooms", label: "Bedrooms" },
+    { key: "bathrooms", label: "Bathrooms" },
+    { key: "size_sqft", label: "Size", format: (v) => `${v} sq ft` },
+    { key: "amenities", label: "Amenities", format: (v) => v?.join(", ") || "—" },
+  ];
+}
 
-function parseSearchInput(value) {
+function parseSearchInput(value, region = DEFAULT_REGION) {
   const trimmed = value.trim();
   if (!trimmed) return null;
+
+  const config = getRegionConfig(region);
+  const budgetThreshold = config.budgetMin;
 
   const bedroomMatch = trimmed.match(/^(\d+)\s*(bhk|bed|bedroom|bedrooms|house|room|rooms)?$/i);
   if (bedroomMatch) {
@@ -24,6 +31,11 @@ function parseSearchInput(value) {
     if (num >= 1 && num <= 10) {
       return { bedrooms: String(num), type: "bedrooms" };
     }
+  }
+
+  const budget = parseBudgetAmount(trimmed, region);
+  if (!Number.isNaN(budget) && budget >= budgetThreshold) {
+    return { budget: String(budget), type: "price" };
   }
 
   const digitsOnly = trimmed.replace(/[^\d]/g, "");
@@ -34,7 +46,9 @@ function parseSearchInput(value) {
     if (num >= 1 && num <= 10) {
       return { bedrooms: String(num), type: "bedrooms" };
     }
-    return { budget: String(num), type: "price" };
+    if (num >= budgetThreshold) {
+      return { budget: String(num), type: "price" };
+    }
   }
 
   return { location: trimmed, type: "location" };
@@ -47,36 +61,52 @@ function getInputHint(parsed) {
   return "Detected: Location";
 }
 
-async function findProperty(rawInput) {
-  const criteria = parseSearchInput(rawInput);
+async function findProperty(rawInput, region) {
+  const criteria = parseSearchInput(rawInput, region);
   if (!criteria) return null;
 
   const res = await axios.post(API_URL, {
+    region,
     location: criteria.location || undefined,
     budget: criteria.budget || undefined,
     bedrooms: criteria.bedrooms || undefined,
   });
 
-  if (!res.data.length) return null;
+  const { properties } = parsePropertyApiResponse(res.data);
+
+  if (!properties.length) return null;
 
   if (criteria.budget) {
     const budget = parseInt(criteria.budget, 10);
-    return res.data.reduce((best, prop) => {
+    return properties.reduce((best, prop) => {
       const bestDiff = Math.abs(best.price - budget);
       const propDiff = Math.abs(prop.price - budget);
       return propDiff < bestDiff ? prop : best;
     });
   }
 
-  return res.data[0];
+  return properties[0];
 }
 
-function PropertyCompare() {
+function PropertyCompare({ region = DEFAULT_REGION, comparePair, onCompareConsumed }) {
   const [property1Input, setProperty1Input] = useState("");
   const [property2Input, setProperty2Input] = useState("");
   const [compareResult, setCompareResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!comparePair?.prop1 || !comparePair?.prop2) return;
+    setProperty1Input(comparePair.prop1.title);
+    setProperty2Input(comparePair.prop2.title);
+    setCompareResult({ prop1: comparePair.prop1, prop2: comparePair.prop2 });
+    setError("");
+    onCompareConsumed?.();
+  }, [comparePair, onCompareConsumed]);
+
+  const config = getRegionConfig(region);
+  const compareFields = getCompareFields(region);
+  const sampleLocation = getQuickOptions(region).location[0];
 
   const handleCompare = async () => {
     if (!property1Input.trim() || !property2Input.trim()) {
@@ -90,8 +120,8 @@ function PropertyCompare() {
 
     try {
       const [prop1, prop2] = await Promise.all([
-        findProperty(property1Input),
-        findProperty(property2Input),
+        findProperty(property1Input, region),
+        findProperty(property2Input, region),
       ]);
 
       if (!prop1 && !prop2) {
@@ -122,7 +152,7 @@ function PropertyCompare() {
   };
 
   const renderInputForm = (side, value, onChange) => {
-    const parsed = parseSearchInput(value);
+    const parsed = parseSearchInput(value, region);
 
     return (
       <div className="compare-input-card">
@@ -131,7 +161,7 @@ function PropertyCompare() {
           Enter location, price, or house (bedrooms)
           <input
             type="text"
-            placeholder="e.g. New York, 450000, 3 BHK"
+            placeholder={config.comparePlaceholder || `e.g. ${sampleLocation}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
@@ -195,7 +225,7 @@ function PropertyCompare() {
                 </tr>
               </thead>
               <tbody>
-                {COMPARE_FIELDS.map((field) => (
+                {compareFields.map((field) => (
                   <tr key={field.key}>
                     <td>{field.label}</td>
                     <td>{renderValue(field, compareResult.prop1)}</td>

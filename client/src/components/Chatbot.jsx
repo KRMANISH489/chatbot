@@ -1,27 +1,52 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
-  QUESTIONS,
-  QUICK_OPTIONS,
+  getQuestions,
+  getQuickOptions,
   validateAnswer,
   formatOption,
   formatTime,
   createWelcomeMessages,
+  parsePropertyApiResponse,
+  parseNaturalQuery,
+  buildPropertySummary,
 } from "./chatHelpers";
+import { formatPrice, getRegionConfig, DEFAULT_REGION } from "../regionConfig";
+import {
+  getSpeechLang,
+  normalizeVoiceInput,
+} from "../voiceHelpers";
+import RegionSwitcher from "./RegionSwitcher";
 import "./ChatBot.scss";
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const API_URL = "http://localhost:5000/api/properties";
+const LEADS_API_URL = "http://localhost:5000/api/leads";
 const FALLBACK_IMAGE = "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
 
 function stripForSpeech(text) {
   return text.replace(/[^\w\s,.₹$%-]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
-  const [messages, setMessages] = useState(createWelcomeMessages);
+function Chatbot({
+  region = DEFAULT_REGION,
+  onRegionChange,
+  isOpen: controlledOpen,
+  onOpenChange,
+  chatContext,
+  onChatContextConsumed,
+  onCompareProperties,
+}) {
+  const regionConfig = useMemo(() => getRegionConfig(region), [region]);
+  const questions = useMemo(() => getQuestions(region), [region]);
+  const quickOptions = useMemo(() => getQuickOptions(region), [region]);
+  const voiceLang = region === "IN" ? "hi" : "en";
+  const activeSpeechLang = useMemo(() => getSpeechLang(region, voiceLang), [region, voiceLang]);
+  const hindiVoiceOn = region === "IN";
+
+  const [messages, setMessages] = useState(() => createWelcomeMessages(region));
   const [input, setInput] = useState("");
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({});
@@ -30,6 +55,12 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
   const [chatComplete, setChatComplete] = useState(false);
   const [searchFailed, setSearchFailed] = useState(false);
   const [retryField, setRetryField] = useState(null);
+  const [lastResults, setLastResults] = useState([]);
+  const [lastSearchCriteria, setLastSearchCriteria] = useState(null);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadLoading, setLeadLoading] = useState(false);
+  const [leadForm, setLeadForm] = useState({ name: "", phone: "", email: "" });
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
@@ -46,6 +77,7 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
   const recognitionRef = useRef(null);
   const lastSpokenRef = useRef(-1);
   const voiceSubmitPendingRef = useRef(false);
+  const contextHandledRef = useRef(null);
 
   useEffect(() => {
     setVoiceSupported(Boolean(SpeechRecognition && window.speechSynthesis));
@@ -61,10 +93,10 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
     if (!cleanText) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = "en-IN";
+    utterance.lang = activeSpeechLang;
     utterance.rate = 0.95;
     window.speechSynthesis.speak(utterance);
-  }, [voiceEnabled]);
+  }, [voiceEnabled, activeSpeechLang]);
 
   useEffect(() => {
     if (!isOpen || !voiceEnabled) return;
@@ -79,20 +111,22 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
       if (lastMsg.type === "bot") speak(lastMsg.text);
       else if (lastMsg.type === "property") {
         const p = lastMsg.data;
-        speak(`${p.title}, price ${p.price} rupees, ${p.location}, ${p.bedrooms} bedrooms`);
+        const priceLabel = formatPrice(region, p.price);
+        speak(`${p.title}, price ${priceLabel}, ${p.location}, ${p.bedrooms} bedrooms`);
       }
     }
-  }, [messages, isOpen, voiceEnabled, speak]);
+  }, [messages, isOpen, voiceEnabled, speak, region]);
 
   useEffect(() => {
     if (!SpeechRecognition) return undefined;
     const recognition = new SpeechRecognition();
-    recognition.lang = "en-IN";
+    recognition.lang = activeSpeechLang;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     recognition.onresult = (event) => {
       voiceSubmitPendingRef.current = true;
-      setInput(event.results[0][0].transcript);
+      const transcript = event.results[0][0].transcript;
+      setInput(normalizeVoiceInput(transcript, region, voiceLang));
     };
     recognition.onerror = () => setIsListening(false);
     recognition.onend = () => setIsListening(false);
@@ -101,7 +135,41 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
       recognition.stop();
       window.speechSynthesis?.cancel();
     };
-  }, []);
+  }, [activeSpeechLang, region, voiceLang]);
+
+  useEffect(() => {
+    if (!isOpen || !chatContext || contextHandledRef.current === chatContext) return;
+    contextHandledRef.current = chatContext;
+
+    if (chatContext.type === "property" && chatContext.property) {
+      const property = chatContext.property;
+      const now = new Date();
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "user",
+          text: `Is property ke baare mein batao — ${property.title}`,
+          time: now,
+        },
+        {
+          type: "bot",
+          text: "Sure! Here are the full details for this property:",
+          time: now,
+        },
+        { type: "property", data: property, time: now },
+        {
+          type: "bot",
+          text: buildPropertySummary(property, region),
+          time: now,
+        },
+      ]);
+      setChatComplete(false);
+      setSearchFailed(false);
+      setShowLeadForm(false);
+    }
+
+    onChatContextConsumed?.();
+  }, [isOpen, chatContext, onChatContextConsumed, region]);
 
   const pushBotMessage = useCallback((text, extra = {}, delay = 700) => {
     setIsTyping(true);
@@ -120,7 +188,7 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
   const restartChat = () => {
     window.speechSynthesis?.cancel();
     lastSpokenRef.current = -1;
-    setMessages(createWelcomeMessages());
+    setMessages(createWelcomeMessages(region));
     setInput("");
     setStep(0);
     setFormData({});
@@ -129,10 +197,16 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
     setChatComplete(false);
     setSearchFailed(false);
     setRetryField(null);
+    setLastResults([]);
+    setLastSearchCriteria(null);
+    setShowLeadForm(false);
+    setLeadSubmitted(false);
+    setLeadForm({ name: "", phone: "", email: "" });
+    contextHandledRef.current = null;
   };
 
   const editField = async (fieldKey) => {
-    const stepIndex = QUESTIONS.findIndex((q) => q.key === fieldKey);
+    const stepIndex = questions.findIndex((q) => q.key === fieldKey);
     if (stepIndex === -1) return;
 
     setSearchFailed(false);
@@ -147,7 +221,7 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
       setFormData((prev) => ({ location: prev.location }));
     }
 
-    const question = QUESTIONS[stepIndex];
+    const question = questions[stepIndex];
     await pushBotMessage(`Let's update your ${fieldKey}. ${question.question}`, {
       hint: question.hint,
     });
@@ -159,8 +233,8 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
     await pushBotMessage("Searching for matching properties...", {}, 500);
 
     try {
-      const res = await axios.post(API_URL, criteria, { timeout: 10000 });
-      const results = Array.isArray(res.data) ? res.data : [];
+      const res = await axios.post(API_URL, { ...criteria, region }, { timeout: 10000 });
+      const { properties: results, matchType } = parsePropertyApiResponse(res.data);
 
       if (results.length === 0) {
         setChatComplete(false);
@@ -174,12 +248,29 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
         setChatComplete(true);
         setSearchFailed(false);
         setRetryField(null);
-        await pushBotMessage(`Great news! I found ${results.length} matching ${results.length === 1 ? "property" : "properties"} for you:`);
+        setLastResults(results);
+        setLastSearchCriteria(criteria);
+        setShowLeadForm(true);
+        setLeadSubmitted(false);
+        if (matchType === "similar_range") {
+          await pushBotMessage(
+            "I couldn't find an exact match for your budget, but here are similar properties in your price range:"
+          );
+        } else {
+          await pushBotMessage(
+            `Great news! I found ${results.length} matching ${results.length === 1 ? "property" : "properties"} for you:`
+          );
+        }
         setMessages((prev) => [
           ...prev,
           ...results.map((prop) => ({ type: "property", data: prop, time: new Date() })),
         ]);
         await pushBotMessage("Need another search? Tap 'Search Again' below.", { showActions: true }, 400);
+        await pushBotMessage(
+          "Share your contact details below and an agent will call you back.",
+          { showLeadPrompt: true },
+          400
+        );
       }
     } catch {
       setChatComplete(false);
@@ -193,14 +284,54 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
     }
   };
 
+  const runOneShotSearch = async (parsed, displayAnswer) => {
+    setMessages((prev) => [...prev, { type: "user", text: displayAnswer, time: new Date() }]);
+    setInput("");
+    setStep(questions.length);
+
+    const criteria = {
+      location: parsed.location,
+      budget: parsed.budget,
+      bedrooms: parsed.bedrooms,
+    };
+    setFormData(criteria);
+    await searchProperties(criteria);
+  };
+
   const handleSubmit = async (textOverride) => {
-    const answer = (textOverride ?? input).trim();
+    const rawAnswer = (textOverride ?? input).trim();
+    const answer = normalizeVoiceInput(rawAnswer, region, voiceLang);
     if (!answer || loading || isTyping || chatComplete) return;
 
-    const currentQuestion = QUESTIONS[step];
-    const validation = validateAnswer(currentQuestion.key, answer);
+    if (step === 0) {
+      const parsed = parseNaturalQuery(answer, region);
+      if (parsed) {
+        const locVal = validateAnswer("location", parsed.location, region);
+        const budgetVal = validateAnswer("budget", parsed.budget, region);
+        const bedVal = validateAnswer("bedrooms", parsed.bedrooms, region);
 
-    setMessages((prev) => [...prev, { type: "user", text: answer, time: new Date() }]);
+        if (locVal.valid && budgetVal.valid && bedVal.valid) {
+          const displayAnswer = `${parsed.location} • ${formatOption("budget", budgetVal.value, region)} • ${formatOption("bedrooms", bedVal.value, region)}`;
+          await runOneShotSearch(
+            {
+              location: locVal.value,
+              budget: budgetVal.value,
+              bedrooms: bedVal.value,
+            },
+            displayAnswer
+          );
+          return;
+        }
+      }
+    }
+
+    const currentQuestion = questions[step];
+    const validation = validateAnswer(currentQuestion.key, answer, region);
+    const displayText = validation.valid
+      ? formatOption(currentQuestion.key, validation.value, region)
+      : answer;
+
+    setMessages((prev) => [...prev, { type: "user", text: displayText, time: new Date() }]);
     setInput("");
 
     if (!validation.valid) {
@@ -214,13 +345,13 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
     const updatedForm = { ...formData, [currentQuestion.key]: validation.value };
     setFormData(updatedForm);
 
-    if (step + 1 < QUESTIONS.length) {
+    if (step + 1 < questions.length) {
       const nextStep = step + 1;
-      const nextQuestion = QUESTIONS[nextStep];
+      const nextQuestion = questions[nextStep];
       setStep(nextStep);
       await pushBotMessage(nextQuestion.question, { hint: nextQuestion.hint });
     } else {
-      setStep(QUESTIONS.length);
+      setStep(questions.length);
       await searchProperties(updatedForm);
     }
   };
@@ -251,7 +382,34 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
     if (e.key === "Enter") handleSubmit();
   };
 
-  const currentKey = step < QUESTIONS.length ? QUESTIONS[step].key : null;
+  const submitLead = async (e) => {
+    e.preventDefault();
+    if (!leadForm.name.trim() || !leadForm.phone.trim() || leadLoading) return;
+
+    setLeadLoading(true);
+    try {
+      await axios.post(LEADS_API_URL, {
+        name: leadForm.name,
+        phone: leadForm.phone,
+        email: leadForm.email,
+        region,
+        searchCriteria: lastSearchCriteria,
+      });
+      setLeadSubmitted(true);
+      setShowLeadForm(false);
+      await pushBotMessage(
+        `Thank you, ${leadForm.name.trim()}! An agent will call you at ${leadForm.phone.trim()} shortly.`,
+        {},
+        300
+      );
+    } catch {
+      await pushBotMessage("Could not save your details. Please try again.", {}, 300);
+    } finally {
+      setLeadLoading(false);
+    }
+  };
+
+  const currentKey = step < questions.length ? questions[step].key : null;
   const showQuickOptions =
     isOpen && !loading && !isTyping && !chatComplete && !searchFailed && currentKey;
   const showRetryOptions = isOpen && !loading && !isTyping && searchFailed;
@@ -267,10 +425,17 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
               <div className="bot-avatar">M</div>
               <div>
                 <strong>Agent Mira</strong>
-                <span className="online-status">Online • Property Assistant</span>
+                <span className="online-status">Online • {regionConfig.flag} {regionConfig.label}</span>
               </div>
             </div>
             <div className="chat-header-actions">
+              {onRegionChange && (
+                <RegionSwitcher
+                  region={region}
+                  onRegionChange={onRegionChange}
+                  compact
+                />
+              )}
               <button type="button" className="header-icon-btn" onClick={restartChat} title="Restart chat">
                 ↺
               </button>
@@ -307,7 +472,7 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
                     />
                     <h4>{msg.data.title}</h4>
                     <p className="property-price">
-                      ₹{Number(msg.data.price).toLocaleString("en-IN")}
+                      {formatPrice(region, msg.data.price)}
                     </p>
                     <p>{msg.data.location}</p>
                     <div className="property-tags">
@@ -339,12 +504,43 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
             {isListening && (
               <div className="msg-row bot">
                 <div className="bot-avatar small">M</div>
-                <div className="bubble bot listening">Listening... speak now</div>
+                <div className="bubble bot listening">
+                  {hindiVoiceOn ? "सुन रही हूँ... अब बोलिए" : "Listening... speak now"}
+                </div>
               </div>
             )}
 
             <div ref={chatRef} />
           </div>
+
+          {showLeadForm && !leadSubmitted && chatComplete && (
+            <form className="lead-capture" onSubmit={submitLead}>
+              <p className="lead-capture__title">📞 Agent callback</p>
+              <input
+                type="text"
+                placeholder="Your name *"
+                value={leadForm.name}
+                onChange={(e) => setLeadForm((f) => ({ ...f, name: e.target.value }))}
+                required
+              />
+              <input
+                type="tel"
+                placeholder="Phone number *"
+                value={leadForm.phone}
+                onChange={(e) => setLeadForm((f) => ({ ...f, phone: e.target.value }))}
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email (optional)"
+                value={leadForm.email}
+                onChange={(e) => setLeadForm((f) => ({ ...f, email: e.target.value }))}
+              />
+              <button type="submit" className="lead-capture__btn" disabled={leadLoading}>
+                {leadLoading ? "Saving..." : "Request Callback"}
+              </button>
+            </form>
+          )}
 
           {(showQuickOptions || showInvalidOptions || showRetryOptions || chatComplete) && (
             <div className={`quick-replies ${showInvalidOptions || showRetryOptions ? "retry-mode" : ""}`}>
@@ -356,14 +552,14 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
 
               {(showQuickOptions || showInvalidOptions) &&
                 currentKey &&
-                QUICK_OPTIONS[currentKey].map((option) => (
+                quickOptions[currentKey].map((option) => (
                   <button
                     key={option}
                     type="button"
                     className="quick-reply-btn"
                     onClick={() => handleSubmit(option)}
                   >
-                    {formatOption(currentKey, option)}
+                    {formatOption(currentKey, option, region)}
                   </button>
                 ))}
 
@@ -386,9 +582,20 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
               )}
 
               {chatComplete && !searchFailed && (
-                <button type="button" className="quick-reply-btn primary" onClick={restartChat}>
-                  Search Again
-                </button>
+                <>
+                  {lastResults.length >= 2 && onCompareProperties && (
+                    <button
+                      type="button"
+                      className="quick-reply-btn"
+                      onClick={() => onCompareProperties(lastResults[0], lastResults[1])}
+                    >
+                      ⚖️ Compare These
+                    </button>
+                  )}
+                  <button type="button" className="quick-reply-btn primary" onClick={restartChat}>
+                    Search Again
+                  </button>
+                </>
               )}
             </div>
           )}
@@ -413,8 +620,16 @@ function Chatbot({ isOpen: controlledOpen, onOpenChange }) {
                   : searchFailed
                     ? "Tap a button above to change your search"
                     : isListening
-                      ? "Speak now..."
-                      : "Type a message..."
+                      ? hindiVoiceOn
+                        ? "Hindi mein boliye..."
+                        : "Speak now..."
+                      : step === 0
+                        ? hindiVoiceOn
+                          ? "Try: Mumbai mein pachaas lakh mein do BHK"
+                          : "Try: Mumbai mein 50 lakh mein 2 BHK"
+                        : hindiVoiceOn
+                          ? "Type or speak in Hindi..."
+                          : "Type a message..."
               }
               value={input}
               onChange={(e) => setInput(e.target.value)}

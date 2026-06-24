@@ -5,3 +5,6 @@ server/node_modules/
 # === React (frontend) ===
 client/node_modules/
 client/.env
+
+# Lead submissions (runtime data)
+server/data_structure/leads.json

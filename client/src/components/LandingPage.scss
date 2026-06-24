@@ -455,6 +455,22 @@
       color: var(--text-muted);
     }
   }
+
+  &__cta {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--brand-primary);
+  }
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: var(--shadow-lg, 0 12px 28px rgba(7, 94, 84, 0.15));
+    }
+  }
 }
 
 .properties-loading {
