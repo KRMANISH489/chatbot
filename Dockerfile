@@ -13,7 +13,6 @@ COPY server ./server
 RUN CI=false npm run build --prefix client
 
 ENV NODE_ENV=production
-ENV PORT=8080
 
 EXPOSE 8080
 
