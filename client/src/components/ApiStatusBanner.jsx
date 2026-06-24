@@ -21,7 +21,7 @@ function ApiStatusBanner() {
     <div className="api-status-banner" role="alert">
       <strong>Backend not connected.</strong>{" "}
       {status === "html"
-        ? "This site is frontend-only. On Railway set Root Directory to server and redeploy."
+        ? "Backend API is not running. Wait for Railway deploy to finish or redeploy the service."
         : "Please check your connection or refresh the page."}
     </div>
   );
