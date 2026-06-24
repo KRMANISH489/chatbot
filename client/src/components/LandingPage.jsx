@@ -27,17 +27,20 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
       <nav className={`landing-nav ${navScrolled ? "scrolled" : ""}`}>
         <div className="landing-container landing-nav__inner">
           <button type="button" className="nav-logo-btn" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <BrandLogo size="sm" light={!navScrolled} />
+            <BrandLogo size="xs" light={!navScrolled} variant="nav" />
           </button>
           <div className="landing-nav__links">
             <button type="button" onClick={() => scrollTo("features")}>Features</button>
             <button type="button" onClick={() => scrollTo("compare")}>Compare</button>
             <button type="button" onClick={() => scrollTo("properties")}>Properties</button>
           </div>
-          <RegionSwitcher region={region} onRegionChange={onRegionChange} compact />
-          <button type="button" className="nav-cta" onClick={onOpenChat}>
-            Talk to {BRAND.assistant}
-          </button>
+          <div className="landing-nav__actions">
+            <RegionSwitcher region={region} onRegionChange={onRegionChange} compact />
+            <button type="button" className="nav-cta" onClick={onOpenChat}>
+              <span className="nav-cta__long">Talk to {BRAND.assistant}</span>
+              <span className="nav-cta__short">Chat</span>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -121,7 +124,7 @@ function LandingPage({ region, onRegionChange, onOpenChat, onAskAboutProperty, c
 
       <section className="cta-banner">
         <div className="landing-container cta-banner__inner">
-          <BrandLogo size="lg" showTagline light />
+          <BrandLogo size="md" showTagline light />
           <h2>Ready to find your next home?</h2>
           <p>Chat with {BRAND.assistant} and discover properties tailored to your budget and lifestyle.</p>
           <button type="button" className="btn btn-primary btn-lg" onClick={onOpenChat}>

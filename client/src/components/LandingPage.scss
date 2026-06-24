@@ -24,56 +24,7 @@
   padding: 0 1.5rem;
 }
 
-/* Brand Logo */
-.brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-
-  &__icon {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-  }
-
-  &__bg { fill: var(--brand-primary); }
-  &__house { fill: var(--white); }
-  &__dot { fill: var(--brand-gold); }
-  &__line { stroke: var(--brand-gold); }
-
-  &__name {
-    display: block;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--brand-dark);
-    line-height: 1.1;
-
-    em {
-      font-style: normal;
-      color: var(--brand-primary);
-    }
-  }
-
-  &__tagline {
-    display: block;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  &--sm &__icon { width: 36px; height: 36px; }
-  &--sm &__name { font-size: 1rem; }
-
-  &--lg &__icon { width: 56px; height: 56px; }
-  &--lg &__name { font-size: 1.5rem; }
-
-  &--light &__name { color: var(--white); }
-  &--light &__name em { color: var(--brand-gold-light); }
-  &--light &__tagline { color: rgba(255, 255, 255, 0.75); }
-}
+/* Brand logo styles live in BrandLogo.scss */
 
 /* Navigation */
 .landing-nav {
@@ -102,6 +53,13 @@
     gap: 1rem;
   }
 
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+  }
+
   &__links {
     display: flex;
     gap: 1.75rem;
@@ -125,6 +83,8 @@
   border: none;
   padding: 0;
   cursor: pointer;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .nav-cta {
@@ -138,6 +98,10 @@
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+
+  &__short {
+    display: none;
+  }
 
   &:hover {
     background: var(--white);
@@ -494,6 +458,7 @@
     .brand-logo {
       justify-content: center;
       margin-bottom: 0.5rem;
+      align-items: center;
     }
 
     h2 {
@@ -530,7 +495,7 @@
   }
 
   .brand-logo__name { color: var(--white); }
-  .brand-logo__name em { color: var(--brand-gold-light); }
+  .brand-logo__suffix { color: var(--brand-gold-light); opacity: 1; }
   .brand-logo__tagline { color: rgba(255, 255, 255, 0.5); }
 }
 
@@ -550,11 +515,53 @@
 }
 
 @media (max-width: 768px) {
+  .landing-nav {
+    padding: 0.5rem 0;
+
+    .landing-container {
+      padding: 0 0.85rem;
+    }
+
+    &__inner {
+      gap: 0.45rem;
+    }
+
+    &__actions {
+      gap: 0.4rem;
+    }
+
+    .region-switcher.compact {
+      .region-switcher__label {
+        display: none;
+      }
+
+      button {
+        padding: 0.28rem 0.42rem;
+        min-width: 2.1rem;
+        justify-content: center;
+      }
+    }
+  }
+
+  .nav-cta {
+    padding: 0.42rem 0.7rem;
+    font-size: 0.74rem;
+    border-width: 1.5px;
+
+    &__long {
+      display: none;
+    }
+
+    &__short {
+      display: inline;
+    }
+  }
+
   .landing-nav__links { display: none; }
 
   .hero {
     min-height: auto;
-    padding: 6rem 0 3rem;
+    padding: 5.5rem 0 3rem;
   }
 
   .hero__stats { gap: 1.5rem; }
@@ -562,5 +569,16 @@
   .landing-footer__inner {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand-logo--nav .brand-logo__text {
+    display: none;
+  }
+
+  .brand-logo--nav .brand-logo__mark {
+    width: 28px;
+    height: 28px;
   }
 }
