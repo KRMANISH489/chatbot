@@ -1,10 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 const propertiesRoute = require("./routes/properties");
 const leadsRoute = require("./routes/leads");
 
 const app = express();
+const clientBuildPath = path.join(__dirname, "../client/build");
+const servesClient = fs.existsSync(path.join(clientBuildPath, "index.html"));
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
@@ -38,16 +42,21 @@ if (process.env.MONGODB_URI) {
   console.log("MongoDB skipped — using JSON property data");
 }
 
-app.get("/", (req, res) => {
-  res.send("Real Estate API is running");
-});
-
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
 app.use("/api/properties", propertiesRoute);
 app.use("/api/leads", leadsRoute);
+
+if (servesClient) {
+  app.use(express.static(clientBuildPath));
+  console.log("Serving React app from client/build");
+} else {
+  app.get("/", (req, res) => {
+    res.send("Real Estate API is running");
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

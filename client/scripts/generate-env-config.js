@@ -1,10 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 
+const onRailway = Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PUBLIC_DOMAIN);
 const apiUrl =
   process.env.REACT_APP_API_URL ||
   process.env.API_URL ||
-  "http://localhost:5000";
+  (onRailway ? "" : "http://localhost:5000");
 
 const buildDir = path.join(__dirname, "..", "build");
 const outFile = path.join(buildDir, "env-config.js");
@@ -16,4 +17,4 @@ if (!fs.existsSync(buildDir)) {
 }
 
 fs.writeFileSync(outFile, content);
-console.log("Production API URL:", apiUrl);
+console.log("Production API URL:", apiUrl || "(same origin — /api)");

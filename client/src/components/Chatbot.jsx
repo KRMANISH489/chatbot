@@ -17,7 +17,7 @@ import {
   getSpeechLang,
   normalizeVoiceInput,
 } from "../voiceHelpers";
-import { getPropertiesApiUrl, getLeadsApiUrl } from "../apiConfig";
+import { getPropertiesApiUrl, getLeadsApiUrl, isLocalHost } from "../apiConfig";
 import RegionSwitcher from "./RegionSwitcher";
 import "./ChatBot.scss";
 
@@ -272,13 +272,15 @@ function Chatbot({
           400
         );
       }
-    } catch {
+    } catch (err) {
       setChatComplete(false);
       setSearchFailed(true);
+      const apiHint = isLocalHost() ? "" : " Make sure you opened the live Railway link, not localhost.";
       await pushBotMessage(
-        "Something went wrong while fetching properties. Please check your connection and try again.",
+        `Something went wrong while fetching properties. Please check your connection and try again.${apiHint}`,
         { showRetryActions: true }
       );
+      console.error("Property search failed:", getPropertiesApiUrl(), err);
     } finally {
       setLoading(false);
     }
